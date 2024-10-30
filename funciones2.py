@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import ticker
+import pandas as pd
 
 def hallar_max(vector):
     """
@@ -143,3 +144,122 @@ def inv(A):
 
     """
     return inversaLU(*calcularLU(A))
+
+def metodo_potencia(A, numero_de_iteraciones):
+    """
+    Función: Retorna el mayor autovalor y el autovector asociado de la matriz A
+    
+    Parametros de entrada
+    ----------
+    A : np.array (matriz cuadrada)
+    
+    numero_de_iteraciones : potencia a la que elevo A antes de multiplicarla por el vector inicial
+
+    Retorna
+    -------
+    El autovalor y su autovector asociado
+
+    """
+    n = A.shape[0]
+    
+    #tomo un vector normal random
+    v = np.random.rand(n)   
+    v = v / np.linalg.norm(v)  
+    
+    for i in range(numero_de_iteraciones):
+        #lo multiplico y normalizo
+        v_siguiente = np.dot(A, v)
+        v_siguiente = v_siguiente / np.linalg.norm(v_siguiente)
+        v = v_siguiente
+
+    #obtenemos el autovalor y el autovector
+    autovalor = np.dot(v_siguiente, np.dot(A, v_siguiente))     
+    return autovalor, v_siguiente
+
+def matriz_ip_del_pais_1():
+    #TODO COMENTAR
+
+    #importamos el archivo con los datos
+    df = pd.read_excel("./matrizlatina2011_compressed_0.xlsx", sheet_name='LAC_IOT_2011')
+
+
+    #obtenemos la matriz parcial con los datos relevantes, filtrando con pandas
+    COL_COL = df[df['Country_iso3'] == 'COL'][df.columns[pd.Series(
+        df.columns.values).str.startswith("COL")]]
+    
+    #obtenemos los outputs, la producción por país
+    output_COL = np.array(df[df['Country_iso3'] == 'COL']['Output'])
+
+    #ahora que tenemos los datos, queremos construir la matriz insumo-producto
+
+    #convertimos los outputs a matrices
+    P_COL = np.diag(output_COL)
+
+    #invertimos las matrices producto
+    Inv_P_COL = inv(P_COL)
+
+    #creamos la matriz de coeficientes técnicos
+    A_CC = np.array(COL_COL@Inv_P_COL)
+    
+    return A_CC
+
+
+def metodoPotenciaHotelling(A):
+    """
+    Función: Retorna el mayor autovector asociado de la matriz A
+    
+    Parametros de entrada
+    ----------
+    A : np.array (matriz cuadrada)
+    
+    Retorna
+    -------
+    El autovector asociado al mayor autovalor
+
+    """
+    n = A.shape[0]
+    
+    #tomo un vector normal random
+    v = np.random.rand(n)   
+    v = v / np.linalg.norm(v)  
+    v_siguiente = np.dot(A, v)
+    
+    while(np.linalg.norm(v_siguiente - v) > 1 - np.finfo(float).eps):
+        #lo multiplico y normalizo
+        v = v_siguiente
+        v_siguiente = np.dot(A, v)
+        v_siguiente = v_siguiente / np.linalg.norm(v_siguiente)
+        
+    return v_siguiente
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
