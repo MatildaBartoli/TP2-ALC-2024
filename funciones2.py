@@ -152,7 +152,6 @@ def metodo_potencia(A, numero_de_iteraciones):
     Parametros de entrada
     ----------
     A : np.array (matriz cuadrada)
-    
     numero_de_iteraciones : potencia a la que elevo A antes de multiplicarla por el vector inicial
 
     Retorna
@@ -172,16 +171,22 @@ def metodo_potencia(A, numero_de_iteraciones):
         v_siguiente = v_siguiente / np.linalg.norm(v_siguiente)
         v = v_siguiente
 
-    #obtenemos el autovalor y el autovector
+    #obtenemos el autovalor
     autovalor = np.dot(v_siguiente, np.dot(A, v_siguiente))     
     return autovalor, v_siguiente
 
 def matriz_ip_del_pais_1():
-    #TODO COMENTAR
+    """
+    Función: Obtener la matriz insumo-producto del país 1
+
+    Retorna
+    -------
+    La matriz insumo-producto del país 1
+
+    """
 
     #importamos el archivo con los datos
     df = pd.read_excel("./matrizlatina2011_compressed_0.xlsx", sheet_name='LAC_IOT_2011')
-
 
     #obtenemos la matriz parcial con los datos relevantes, filtrando con pandas
     COL_COL = df[df['Country_iso3'] == 'COL'][df.columns[pd.Series(
@@ -224,7 +229,7 @@ def metodoPotenciaHotelling(A):
     v = v / np.linalg.norm(v)  
     v_siguiente = np.dot(A, v)
     
-    while(np.linalg.norm(v_siguiente - v) > 1 - np.finfo(float).eps):
+    while(np.linalg.norm(v_siguiente - v) > 1 - np.finfo(float).eps): #TODO: seguros que queremos cortar acá?
         #lo multiplico y normalizo
         v = v_siguiente
         v_siguiente = np.dot(A, v)
