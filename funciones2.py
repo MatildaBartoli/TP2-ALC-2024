@@ -208,6 +208,39 @@ def matriz_ip_del_pais_1():
     
     return A_CC
 
+def matriz_ip_del_pais_2():
+    """
+    Función: Obtener la matriz insumo-producto del país 2
+
+    Retorna
+    -------
+    La matriz insumo-producto del país 2
+
+    """
+
+    #importamos el archivo con los datos
+    df = pd.read_excel("./matrizlatina2011_compressed_0.xlsx", sheet_name='LAC_IOT_2011')
+
+    #obtenemos la matriz parcial con los datos relevantes, filtrando con pandas
+    MEX_MEX = df[df['Country_iso3'] == 'MEX'][df.columns[pd.Series(
+    df.columns.values).str.startswith("MEX")]]
+    
+    #obtenemos los outputs, la producción por país
+    output_MEX = np.array(df[df['Country_iso3'] == 'MEX']['Output'])
+
+    #ahora que tenemos los datos, queremos construir la matriz insumo-producto
+
+    #convertimos los outputs a matrices
+    P_MEX = np.diag(output_MEX)
+
+    #invertimos las matrices producto
+    Inv_P_MEX = inv(P_MEX)
+
+    #creamos la matriz de coeficientes técnicos
+    A_MM = np.array(MEX_MEX@Inv_P_MEX)
+    
+    return A_MM
+
 
 def metodoPotenciaHotelling(A):
     """
