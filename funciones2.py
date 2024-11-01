@@ -145,7 +145,7 @@ def inv(A):
     """
     return inversaLU(*calcularLU(A))
 
-def metodo_potencia(A, numero_de_iteraciones):
+def metodo_potencia(A, numero_de_iteraciones=250):
     """
     Función: Retorna el mayor autovalor y el autovector asociado de la matriz A
     
@@ -229,12 +229,15 @@ def metodoPotenciaHotelling(A):
     v = v / np.linalg.norm(v)  
     v_siguiente = np.dot(A, v)
     
-    while(np.linalg.norm(v_siguiente - v) > 1 - np.finfo(float).eps): #TODO: seguros que queremos cortar acá?
+    
+    
+    while(np.linalg.norm(v_siguiente - v) > 1 - 0.999999): #con un epsilon arbitrario
         #lo multiplico y normalizo
         v = v_siguiente
         v_siguiente = np.dot(A, v)
         v_siguiente = v_siguiente / np.linalg.norm(v_siguiente)
         
+            
     return v_siguiente
 
 
