@@ -274,17 +274,172 @@ def metodoPotenciaHotelling(A):
     return v_siguiente
 
 
+def metodoMonteCarlo(A, numero_de_iteraciones, iteraciones_metodo_potencia=50): #TODO
+    """
+    Función: Retorna la lista de resultados de ejecutar el método de la potencia numero_de_iteraciones veces
+    
+    Parametros de entrada
+    ----------
+    A : np.array (matriz cuadrada)
+    numero_de_iteraciones : cantidad de veces que se ejecuta el método de Montecarlo
+    iteraciones_metodo_potencia : iteraciones del método de la potencia
+    
+    Retorna
+    -------
+    Lista de autovalores calculados
+
+    """
+    n = A.shape[0]
+    autovalores = []  
+    for i in range(numero_de_iteraciones):
+        v = np.random.rand(n)   
+        v = v / np.linalg.norm(v)  
+        for i in range(iteraciones_metodo_potencia):
+            v_siguiente = np.dot(A, v)
+            v_siguiente = v_siguiente / np.linalg.norm(v_siguiente)
+        autovalor = np.dot(v_siguiente, np.dot(A, v_siguiente)) 
+        autovalores.append(autovalor)
+    return autovalores
+
+def calcular_normas_potencia(A, potencia):
+    """
+    Función: Retorna la lista de normas de las sumas de potencias parciales
+    
+    Parametros de entrada
+    ----------
+    A : np.array (matriz cuadrada)
+    potencia : cantidad de potencias a calcular
+    
+    Retorna
+    -------
+    Lista de normas de las sumas parciales de potencias
+
+    """
+    n = A.shape[0]
+    I = np.eye(n)
+    suma_parcial = I.copy()
+    normas = [np.linalg.norm(suma_parcial, 2)]
+    potencia_A = A.copy()
+    for i in range(potencia):
+        suma_parcial = suma_parcial + potencia_A
+        normas.append(np.linalg.norm(suma_parcial, 2))
+        potencia_A = A @ potencia_A
+    return normas
 
 
 
+def graficar_consigna_4(normas_A1_n10, normas_A1_n100, normas_A2_n10, normas_A2_n100):
+    """
+    Función: Grafica las normas de las sumas parciales de A^n
+    
+    Parametros de entrada
+    ----------
+    normas_A1_n10 
+    normas_A1_n100 
+    normas_A2_n10 
+    normas_A2_n100 
+
+    """
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(range(101), normas_A1_n100, label="n=100")
+    plt.plot(range(11), normas_A1_n10, label="n=10")
+    plt.title("Convergencia de la serie parcial para A1")
+    plt.xlabel("Número de términos (n)")
+    plt.ylabel("Norma 2 de Suma Parcial")
+    plt.ylim(-5,110)
+    plt.legend()
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(range(101), normas_A2_n100, label="n=100")
+    plt.plot(range(11), normas_A2_n10, label="n=10")
+    plt.title("Convergencia de la serie parcial para A2")
+    plt.xlabel("Número de términos (n)")
+    plt.ylabel("Norma 2 de Suma Parcial")
+    plt.ylim(-5,110)
+    plt.legend()
+    
+    plt.tight_layout()
+    plt.show()
+
+def error_de_suma_de_potencias(A2, n=100):
+    """
+    Función: Retorna el error en cada paso de la suma de potencias
+    
+    Parametros de entrada
+    ----------
+    A2 : np.array (matriz cuadrada)
+    n : cantidad de sumas de potencias
+
+    """    
+    Leontief = inv(np.identity(5)- A2)
+    error = []
+    A = np.identity(5)
+    suma_de_As = A
+    error.append(np.linalg.norm(suma_de_As - Leontief, 2))
+    for i in range(n):
+        A = A @ A2
+        suma_de_As += A
+        error.append(np.linalg.norm(suma_de_As - Leontief, 2))
+
+    return error
 
 
+def graficar_consigna_4d(error_A2):
+    """
+    Función: Grafica la diferencia entre las sumas parciales y la matriz de Leontief
+    
+    Parametros de entrada
+    ----------
+    error_A2
 
+    """    
+    plt.plot(range(101), error_A2)
+    plt.title("Diferencia entre la matriz de Leontief y la suma parcial para A2")
+    plt.xlabel("Número de términos (n) de la suma parcial")
+    
+    plt.show()
 
+def graficar_consigna_3(autovalores_A1, promedio_A1, autovalores_A2, promedio_A2):
+    """
+    Función: Grafica los autovalores de las matrices calculados varias veces, siguiendo el método de Monte Carlo
+    
+    Parametros de entrada
+    ----------
+    autovalores_A1
+    promedio_A1
+    autovalores_A2
+    promedio_A2
 
+    """
+    plt.figure(figsize=(14, 6))
 
-
-
+    plt.subplot(1, 2, 1)
+    plt.plot(autovalores_A1, marker='o', linestyle='-', color='b')
+    plt.axhline(promedio_A1, color='r', linestyle='--', label='Promedio')
+    plt.title('Autovalores de A1 (Método de Monte Carlo)')
+    plt.xlabel('Iteraciones')
+    plt.ylabel('Autovalor Aproximado')
+    plt.ylim(0, 1.1)
+    plt.legend()
+    plt.grid()
+    
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(autovalores_A2, marker='o', linestyle='-', color='g')
+    plt.axhline(promedio_A2, color='r', linestyle='--', label='Promedio')
+    plt.title('Autovalores de A2 (Método de Monte Carlo)')
+    plt.xlabel('Iteraciones')
+    plt.ylabel('Autovalor Aproximado')
+    plt.ylim(0, 1.1)
+    
+    plt.legend()
+    plt.grid()
+    
+    
+    plt.tight_layout()
+    plt.show()
 
 
 
