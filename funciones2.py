@@ -145,6 +145,11 @@ def inv(A):
     """
     return inversaLU(*calcularLU(A))
 
+
+
+
+#Acá empiezan las funciones del TP2
+
 def metodo_potencia(A, numero_de_iteraciones=250):
     """
     Función: Retorna el mayor autovalor y el autovector asociado de la matriz A
@@ -262,14 +267,11 @@ def metodoPotenciaHotelling(A):
     v = v / np.linalg.norm(v)  
     v_siguiente = np.dot(A, v)
     
-    
-    
     while(np.linalg.norm(v_siguiente - v) > 1 - 0.999999): #con un epsilon arbitrario
         #lo multiplico y normalizo
         v = v_siguiente
         v_siguiente = np.dot(A, v)
-        v_siguiente = v_siguiente / np.linalg.norm(v_siguiente)
-        
+        v_siguiente = v_siguiente / np.linalg.norm(v_siguiente)    
             
     return v_siguiente
 
@@ -328,79 +330,41 @@ def calcular_normas_potencia(A, potencia):
 
 
 
-def graficar_consigna_4(normas_A1_n10, normas_A1_n100, normas_A2_n10, normas_A2_n100):
+def graficar_consigna_2 (A1,A2):  
     """
-    Función: Grafica las normas de las sumas parciales de A^n
-    
+    Función: Grafica el efecto de la potencia sobre las normas de las matrices
+  
     Parametros de entrada
     ----------
-    normas_A1_n10 
-    normas_A1_n100 
-    normas_A2_n10 
-    normas_A2_n100 
-
+    A1
+    A2
     """
-    plt.figure(figsize=(12, 6))
+  
+    #calculamos los vectores a1 y a2, las normas de las potencias
+    N = 250
+    a1, a2 = np.zeros(N), np.zeros(N)
 
-    plt.subplot(1, 2, 1)
-    plt.plot(range(101), normas_A1_n100, label="n=100")
-    plt.plot(range(11), normas_A1_n10, label="n=10")
-    plt.title("Convergencia de la serie parcial para A1")
-    plt.xlabel("Número de términos (n)")
-    plt.ylabel("Norma 2 de Suma Parcial")
-    plt.ylim(-5,110)
+    potencia_A1 = A1.copy()
+    potencia_A2 = A2.copy()
+
+    for i in range(N):
+        a1[i] = np.linalg.norm(potencia_A1, ord=2)
+        a2[i] = np.linalg.norm(potencia_A2, ord=2)
+
+        potencia_A1 = A1 @ potencia_A1
+        potencia_A2 = A2 @ potencia_A2
+
+    #graficamos los resultados
+    plt.plot(a1, label="A1")
+    plt.plot(a2, label="A2")
     plt.legend()
-    
-    plt.subplot(1, 2, 2)
-    plt.plot(range(101), normas_A2_n100, label="n=100")
-    plt.plot(range(11), normas_A2_n10, label="n=10")
-    plt.title("Convergencia de la serie parcial para A2")
-    plt.xlabel("Número de términos (n)")
-    plt.ylabel("Norma 2 de Suma Parcial")
-    plt.ylim(-5,110)
-    plt.legend()
-    
-    plt.tight_layout()
+    plt.xlabel("Potencia a la que fue elevada")
+    plt.ylabel("Norma")
+    plt.title("Efecto de la potencia sobre la norma de la matriz")
     plt.show()
-
-def error_de_suma_de_potencias(A2, n=100):
-    """
-    Función: Retorna el error en cada paso de la suma de potencias
     
-    Parametros de entrada
-    ----------
-    A2 : np.array (matriz cuadrada)
-    n : cantidad de sumas de potencias
-
-    """    
-    Leontief = inv(np.identity(5)- A2)
-    error = []
-    A = np.identity(5)
-    suma_de_As = A
-    error.append(np.linalg.norm(suma_de_As - Leontief, 2))
-    for i in range(n):
-        A = A @ A2
-        suma_de_As += A
-        error.append(np.linalg.norm(suma_de_As - Leontief, 2))
-
-    return error
-
-
-def graficar_consigna_4d(error_A2):
-    """
-    Función: Grafica la diferencia entre las sumas parciales y la matriz de Leontief
     
-    Parametros de entrada
-    ----------
-    error_A2
-
-    """    
-    plt.plot(range(101), error_A2)
-    plt.title("Diferencia entre la matriz de Leontief y la suma parcial para A2")
-    plt.xlabel("Número de términos (n) de la suma parcial")
     
-    plt.show()
-
 def graficar_consigna_3(autovalores_A1, promedio_A1, autovalores_A2, promedio_A2):
     """
     Función: Grafica los autovalores de las matrices calculados varias veces, siguiendo el método de Monte Carlo
@@ -440,9 +404,165 @@ def graficar_consigna_3(autovalores_A1, promedio_A1, autovalores_A2, promedio_A2
     
     plt.tight_layout()
     plt.show()
+    
+    
+    
+def graficar_consigna_4(normas_A1_n10, normas_A1_n100, normas_A2_n10, normas_A2_n100):
+    """
+    Función: Grafica las normas de las sumas parciales de A^n
+    
+    Parametros de entrada
+    ----------
+    normas_A1_n10 
+    normas_A1_n100 
+    normas_A2_n10 
+    normas_A2_n100 
+
+    """
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(range(101), normas_A1_n100, label="n=100")
+    plt.plot(range(11), normas_A1_n10, label="n=10")
+    plt.title("Convergencia de la serie parcial para A1")
+    plt.xlabel("Número de términos (n)")
+    plt.ylabel("Norma 2 de Suma Parcial")
+    plt.ylim(-5,110)
+    plt.legend()
+    plt.scatter([10], [normas_A1_n10[-1]], marker="o", c="r", linewidths=4, zorder=3)
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(range(101), normas_A2_n100, label="n=100")
+    plt.plot(range(11), normas_A2_n10, label="n=10")
+    plt.title("Convergencia de la serie parcial para A2")
+    plt.xlabel("Número de términos (n)")
+    plt.ylabel("Norma 2 de Suma Parcial")
+    plt.ylim(-5,110)
+    plt.legend()
+    plt.scatter([10], [normas_A2_n10[-1]], marker="o", c="r", linewidths=4, zorder=3)
+
+    
+    plt.tight_layout()
+    plt.show()
+
+def error_de_suma_de_potencias(A2, n=100):
+    """
+    Función: Retorna el error en cada paso de la suma de potencias
+    
+    Parametros de entrada
+    ----------
+    A2 : np.array (matriz cuadrada)
+    n : cantidad de sumas de potencias
+
+    """    
+    Leontief = inv(np.identity(5)- A2)
+    error = []
+    A = np.identity(5)
+    suma_de_As = A
+    error.append(np.linalg.norm(suma_de_As - Leontief, 2))
+    for i in range(n):
+        A = A @ A2
+        suma_de_As += A
+        error.append(np.linalg.norm(suma_de_As - Leontief, 2))
+
+    return error
 
 
+def graficar_consigna_4d(error_A2):
+    """
+    Función: Grafica la diferencia entre las sumas parciales y la matriz de Leontief
+    
+    Parametros de entrada
+    ----------
+    error_A2
 
+    """    
+    plt.plot(range(101), error_A2)
+    plt.title("Diferencia entre la matriz de Leontief y la suma parcial para A2")
+    plt.xlabel("Número de términos (n) de la suma parcial")
+    plt.ylabel("Diferencia")
+    
+    plt.show()
+
+
+def graficar_consigna_11_1(reduccionArr):
+    """
+    Función: grafica las distancias al origen de coordenadas de cada punto de la ACP en dos dimensiones e identificar el sector   
+    más lejano y el más cercano al origen
+    
+    Parametros de entrada
+    ----------
+    reduccionArr
+    
+    Retorna
+    -------
+    sector_cercano
+    sector_lejano
+    """
+
+    #tengo la matriz Arr reducida. calculo las distancias al origen
+    cant_puntos = len(reduccionArr)
+    distancias = np.zeros(cant_puntos)
+    for i in range(cant_puntos):
+        distancias[i] = np.linalg.norm(reduccionArr[i])
+
+    plt.bar(range(1, cant_puntos+1), height=distancias, width=0.8)
+    plt.title("Distancia de los distintos sectores al origen")
+    plt.xlabel("Sectores")
+    plt.ylabel("Distancias")
+
+    #hallamos el sector más cercano al origen
+    plt.bar([np.argmin(distancias)+1], height=min(distancias), width=0.8, color="red", label="Cercano")
+    sector_cercano = np.argmin(distancias)
+
+    #hallamos el sector más lejano al origen
+    plt.bar([np.argmax(distancias)+1], height=max(distancias), width=0.8, color="orange", label="Lejano")
+    sector_lejano = np.argmax(distancias)
+
+    #lo mostramos
+    plt.legend()
+    plt.show()
+
+    print(f'El sector con la menor distancia al origen es el sector {np.argmin(distancias)+1}'+
+            f' con distancia {min(distancias)}')
+    print(f'El sector con la mayor distancia al origen es el sector {np.argmax(distancias)+1}'+
+            f' con distancia {max(distancias)}')
+    
+    return sector_cercano, sector_lejano
+    
+def graficar_consigna_11_2 (Arr, H, sector_cercano, sector_lejano): 
+    """
+    Función: Grafica la producción en Arr y H del sector mas lejano y mas cercano al origen
+    
+    Parametros de entrada
+    ----------
+    Arr
+    H
+    sector_cercano
+    sector_lejano
+
+    """
+    cant_puntos = Arr.shape[0]
+
+    #graficamos las filas de los sectores más cercanos y lejanos en la matriz original
+    fig, ax1 = plt.subplots()
+    ax1.plot(range(1, cant_puntos+1), Arr[sector_cercano], marker="o", c="g", label=f"Sector {sector_cercano+1}")
+    ax1.plot(range(1, cant_puntos+1), Arr[sector_lejano], marker="o", label=f"Sector {sector_lejano+1}")
+    ax1.set_title("Insumos consumidos por sector en la matriz Arr")
+    ax1.set_xlabel("Sectores")
+    ax1.set_ylabel("Consumo")
+    ax1.legend()
+
+    #lo mismo en la H
+    fig, ax3 = plt.subplots()
+    ax3.plot(range(1, cant_puntos+1), H[sector_cercano], marker="o", c="g", label=f"Sector {sector_cercano+1}")
+    ax3.plot(range(1, cant_puntos+1), H[sector_lejano], marker="o", label=f"Sector {sector_lejano+1}")
+    ax3.set_title("Insumos consumidos por sector en la matriz H")
+    ax3.set_xlabel("Sectores")
+    ax3.set_ylabel("Consumo")
+    ax3.legend()
+    
+    plt.show()
 
 
 
